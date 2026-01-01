@@ -1,0 +1,29 @@
+name: Daily Auto Commit
+
+on:
+  schedule:
+    # Chạy mỗi ngày lúc 01:00 UTC (~08:00 sáng giờ VN)
+    - cron: '0 1 * * *'
+  workflow_dispatch: # Cho phép nhấn nút Run thủ công bất kỳ lúc nào trên GitHub
+
+jobs:
+  commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Make empty commits (2 commits/day)
+        run: |
+          git config --global user.name "doit-now"
+          git config --global user.email "phatttce201069@gmail.com"
+          
+          # Số lượng 2 commit mỗi ngày
+          COUNT=2
+          echo "Generating $COUNT empty commits..."
+          for i in $(seq 1 $COUNT); do
+            git commit --allow-empty -m "chore(activity): daily ping #$i at $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          done
+          git push
